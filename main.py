@@ -5,7 +5,7 @@ import time
 import csv
 
 # --------------------------- Variables --------------------------- #
-version: str = "2.0.0"
+version: str = "2.0.1"
 seperator: str = ";"
 placeholder: str = "$"
 amount_of_variables: int = 0
@@ -29,7 +29,6 @@ def generate_configfiles():
     global placeholder
     global variable_filename
     global static_filename
-    
     with open(variable_filename, newline='') as variable_file:
         csvreader = csv.reader(variable_file, delimiter=seperator)
         
@@ -45,10 +44,7 @@ def generate_configfiles():
                     end_index = start_index + len(placeholder)
                     static_content = static_content[:start_index] + value + static_content[end_index:]
                     start_index = static_content.find(placeholder, start_index + len(value))
-                    
-                #print(f"Replacing {placeholder} with {value}")  # Debug print
-                #print(static_content)  # Debug print
-                
+
             # Write the modified content to a new file
             output_filename = f"{row[0]}.txt"
             with open(output_filename, 'w') as outputfile:
@@ -70,6 +66,10 @@ def save_settings():
     write_to_log(f"Settings saved to {settings_filename}.")
 
 def load_settings():
+    global seperator
+    global placeholder
+    global variable_filename
+    global static_filename
     if os.path.isfile(settings_filename):
         with open(settings_filename, "r") as file:
             lines = file.readlines()
@@ -80,6 +80,12 @@ def load_settings():
                 elif line.startswith("placeholder="):
                     placeholder = line.strip().split("=")[1]
                     text_variable_placeholder.set(placeholder)
+                elif line.startswith("variable_filename="):
+                    variable_filename = line.strip().split("=")[1]
+                    text_variable_file.set(variable_filename)
+                elif line.startswith("static_filename="):
+                    static_filename = line.strip().split("=")[1]
+                    text_static_file.set(static_filename)
         file.close() 
         write_to_log(f"Settings loaded from {settings_filename}\nSeperator: {seperator}\nPlaceholder: {placeholder}\nVariablefile: {variable_filename}\nStatictextfile: {static_filename}")
     else:
@@ -96,6 +102,13 @@ def load_variable_file():
     if filename:
         global variable_filename
         variable_filename = filename
+        
+        # Enable the entry field, delete the content, insert the new filename and disable the entry field again
+        char_variable_file.config(state="normal")   # Enable the entry field
+        char_variable_file.delete(0, tk.END)   # Delete the content of the entry field
+        char_variable_file.insert(0, variable_filename)   # Insert the filename into the entry field
+        char_variable_file.config(state="readonly")   # Disable the entry field
+        
         write_to_log(f"Variable file {variable_filename} selected.")
     else:
         write_to_log("No file selected.")
@@ -113,6 +126,14 @@ def load_static_file():
         write_to_log(f"Static file {static_filename} selected.")
         text_static.delete('1.0', tk.END)   # Delete the content of the text field
         text_static.insert(tk.END, open(static_filename).read())   # Insert the content of the file into the text field
+        text_static_file.set(static_filename)   # Set the filename in the entry field
+        
+        # Enable the entry field, delete the content, insert the new filename and disable the entry field again
+        char_static_file.config(state="normal")   # Enable the entry field
+        char_static_file.delete(0, tk.END)   # Delete the content of the entry field
+        char_static_file.insert(0, static_filename)   # Insert the filename into the entry field
+        char_static_file.config(state="readonly")   # Disable the entry field
+        
         write_to_log(f"Static file {static_filename} loaded.")
     else:
         write_to_log("No file selected.")
@@ -244,7 +265,7 @@ text_static['state'] = 'normal' # Enable the text field
 text_static.bind("<KeyRelease>", static_text_changed)  # Bind the text field to the function
 
 # Create a text field for the log
-text_log = tk.Text(main_frame, height=25, width=100)
+text_log = tk.Text(main_frame, height=25, width=75)
 text_log.grid(row=5, column=4, columnspan=2, padx=widget_padx, pady=widget_pady, sticky="nsew")
 main_frame.grid_rowconfigure(5, weight=1)   # Make the text field expandable
 text_log['state'] = 'disabled'  # Disable the text field
@@ -252,17 +273,31 @@ text_log.config(bg="LightYellow2")  # Set the background color of the text field
 
 
 # -------- Entry Fields -------- #
+# Create an entry field for the path of the variable file
+text_variable_file = tk.StringVar()
+text_variable_file.set(variable_filename)
+char_variable_file = tk.Entry(main_frame, textvariable=text_variable_file, width=50, font=("Arial", entry_text_size))
+char_variable_file.grid(row=1, column=1, padx=widget_padx, pady=widget_pady)
+char_variable_file.config(state="readonly")   # Make the entry field read-only
+
+# Create an entry field for the path of the static file
+text_static_file = tk.StringVar()
+text_static_file.set(static_filename)
+char_static_file = tk.Entry(main_frame, textvariable=text_static_file, width=50, font=("Arial", entry_text_size))
+char_static_file.grid(row=2, column=1, padx=widget_padx, pady=widget_pady)
+char_static_file.config(state="readonly")   # Make the entry field read-only
+
 # Create an entry field for the seperator
 text_variable_seperator = tk.StringVar()
 text_variable_seperator.set(";")
 char_variable_seperator = tk.Entry(main_frame, textvariable=text_variable_seperator, width=2, justify='center', font=("Arial", entry_text_size))
-char_variable_seperator.grid(row=1, column=1, padx=widget_padx, pady=widget_pady)
+char_variable_seperator.grid(row=1, column=2, padx=widget_padx, pady=widget_pady)
 
 # Create an entry field for the placeholder
 text_variable_placeholder = tk.StringVar()
 text_variable_placeholder.set("$")
 char_variable_placeholder = tk.Entry(main_frame, textvariable=text_variable_placeholder, width=2, justify='center', font=("Arial", entry_text_size))
-char_variable_placeholder.grid(row=2, column=1, padx=widget_padx, pady=widget_pady)
+char_variable_placeholder.grid(row=2, column=2, padx=widget_padx, pady=widget_pady)
 
 
 # --------------------------- init --------------------------- #
