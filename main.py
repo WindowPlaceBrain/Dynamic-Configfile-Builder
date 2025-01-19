@@ -18,6 +18,11 @@ program_dir = os.path.dirname(os.path.abspath(__file__))  # Start directory for 
 
 # --------------------------- Functions --------------------------- #
 def write_to_log(text):
+    """Write a text to the log text field with a timestamp.
+
+    Args:
+        text (_type_): The text that should be written to the log.
+    """
     text_log['state'] = 'normal'  # Enable the text field
     current_time = time.strftime("%H:%M:%S")    # Get the current time
     text_log.insert(tk.END, current_time + " " + text + "\n")    # Write the time and text to the text field
@@ -25,6 +30,17 @@ def write_to_log(text):
     pass
 
 def generate_configfiles():
+    """mainfuntion to generate the configfiles from the variable file and the static text file
+    
+    Args:
+        none
+        
+    Returns:
+        none
+        
+    Raises:
+        none
+    """
     global seperator
     global placeholder
     global variable_filename
@@ -56,6 +72,8 @@ def generate_configfiles():
     pass
 
 def save_settings():
+    """Save the settings to the "settings.conf".
+    """
     with open(settings_filename, "w") as file:
         file.write(f"version={version}\n")
         file.write(f"seperator={text_variable_seperator.get()}\n")
@@ -66,6 +84,8 @@ def save_settings():
     write_to_log(f"Settings saved to {settings_filename}.")
 
 def load_settings():
+    """Load the settings from the "settings.conf" file.
+    """
     global seperator
     global placeholder
     global variable_filename
@@ -94,6 +114,8 @@ def load_settings():
     pass
 
 def load_variable_file():
+    """Load the variable file and set the filename in the entry field.
+    """
     filename = filedialog.askopenfilename(
         title="Select a file",
         initialdir=program_dir,
@@ -115,6 +137,8 @@ def load_variable_file():
     pass
 
 def load_static_file():
+    """Load the static file and set the filename in the entry field.
+    """
     filename = filedialog.askopenfilename(
         title="Select a file",
         initialdir=program_dir,
@@ -140,6 +164,8 @@ def load_static_file():
     pass
 
 def default_settings():
+    """Set the settings to the default values.
+    """
     text_variable_seperator.set(";")   # Set the default value of the seperator
     text_variable_placeholder.set("$")    # Set the default value of the text field.
     static_filename = "staticfile.txt"   # Set the default value of the static filename
@@ -147,8 +173,13 @@ def default_settings():
     write_to_log("Settings set to default values.")
     pass
 
-
 def get_file_name():
+    """Get the filename of a file selected by the user.
+    Comment: This function is not used in the current version of the program.
+
+    Returns:
+        _type_: The filename of the selected file.
+    """
     filename = filedialog.askopenfilename(
         title="Select a file",
         filetypes=(("Text files", "*.txt"),("Comma separated values", "*.csv"),("All files", "*.*"))
@@ -159,6 +190,8 @@ def get_file_name():
         write_to_log("No file selected.")
 
 def help_window():
+    """Create a help window with a text field.
+    """
     # Create help window
     help_window = tk.Toplevel(root)  # Create a window
     help_window.title("Help")   # Title of the window
@@ -190,6 +223,11 @@ Made by Luca Moser and Jascha Bucher in 2025.
     pass
 
 def static_text_changed(event):
+    """Function that is called when the static text field is changed.
+
+    Args:
+        event (_type_): The event that triggered the function.
+    """
     open(static_filename, "w").write(text_static.get("1.0", tk.END))
     write_to_log("Static text changed.")
     print("Static text changed.")
