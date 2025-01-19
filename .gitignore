@@ -1,0 +1,20 @@
+# Python-Cache-Dateien
+__pycache__/
+*.pyc
+*.pyo
+
+# PyInstaller-Output
+/build/
+dist/
+*.spec
+
+# Log-Dateien
+*.log
+
+# Virtuelle Umgebungen
+venv/
+env/
+
+# IDE-spezifische Dateien
+.vscode/
+.idea/

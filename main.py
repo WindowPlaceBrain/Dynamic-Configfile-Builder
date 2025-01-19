@@ -4,8 +4,6 @@ import os
 import time
 import csv
 
-
-
 # --------------------------- Variables --------------------------- #
 version: str = "2.0.0"
 seperator: str = ";"
